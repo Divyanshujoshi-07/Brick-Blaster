@@ -1,0 +1,263 @@
+/* ── Variables ─────────────────────────────────────── */
+:root {
+  --bg:        #070a12;
+  --surface:   #0d1220;
+  --border:    #1e2d50;
+  --accent:    #00f0ff;
+  --accent2:   #ff3e6c;
+  --gold:      #ffd700;
+  --text:      #cde0ff;
+  --muted:     #4a6080;
+  --glow:      0 0 12px rgba(0,240,255,.55);
+  --glow2:     0 0 12px rgba(255,62,108,.55);
+  --font-head: 'Courier New', monospace;
+}
+
+/* ── Reset ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-head);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ── Animated grid background ──────────────────────── */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,240,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,240,255,.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridPan 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes gridPan {
+  from { background-position: 0 0; }
+  to   { background-position: 40px 40px; }
+}
+
+/* ── App shell ─────────────────────────────────────── */
+#app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 680px;
+  padding: 16px;
+}
+
+/* ── Header ────────────────────────────────────────── */
+header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 10px 20px;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 0 rgba(0,240,255,.08);
+}
+
+.logo {
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: .2em;
+  color: var(--accent);
+  text-shadow: var(--glow);
+}
+.logo span { color: var(--text); }
+
+/* ── HUD ───────────────────────────────────────────── */
+.hud {
+  display: flex;
+  gap: 24px;
+}
+.hud-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.hud-label {
+  font-size: .58rem;
+  letter-spacing: .15em;
+  color: var(--muted);
+}
+.hud-value {
+  font-size: 1.1rem;
+  letter-spacing: .1em;
+  color: var(--accent);
+  text-shadow: var(--glow);
+}
+.lives {
+  display: flex;
+  gap: 4px;
+}
+.heart {
+  font-size: 1rem;
+  color: var(--accent2);
+  text-shadow: var(--glow2);
+  transition: opacity .3s, transform .3s;
+}
+.heart.lost {
+  opacity: .15;
+  transform: scale(.8);
+}
+
+/* ── Canvas wrapper ────────────────────────────────── */
+.canvas-wrapper {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(0,240,255,.07),
+              0 8px 40px rgba(0,0,0,.6);
+}
+
+canvas {
+  display: block;
+  background: var(--surface);
+}
+
+/* ── Overlays ──────────────────────────────────────── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(7,10,18,.88);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+  transition: opacity .3s;
+}
+.overlay.hidden {
+  display: none;
+}
+
+.overlay-box {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  animation: fadeUp .4s ease both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.overlay-title {
+  font-size: clamp(2rem, 7vw, 3.2rem);
+  font-weight: 900;
+  letter-spacing: .15em;
+  color: var(--accent);
+  text-shadow: var(--glow), 0 0 40px rgba(0,240,255,.3);
+}
+.overlay-title.red  { color: var(--accent2); text-shadow: var(--glow2); }
+.overlay-title.gold { color: var(--gold);   text-shadow: 0 0 14px rgba(255,215,0,.6); }
+
+/* glitch effect on start screen */
+.glitch {
+  position: relative;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+.glitch::before {
+  color: var(--accent2);
+  animation: glitch1 2.5s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  transform: translate(-3px, 0);
+}
+.glitch::after {
+  color: #00ff88;
+  animation: glitch2 2.5s infinite;
+  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+  transform: translate(3px, 0);
+}
+@keyframes glitch1 {
+  0%,94%,100% { transform: translate(-3px,0); opacity: 0; }
+  95%          { transform: translate(-5px,2px); opacity: .7; }
+  97%          { transform: translate(3px,-1px); opacity: .5; }
+}
+@keyframes glitch2 {
+  0%,90%,100% { transform: translate(3px,0); opacity: 0; }
+  91%         { transform: translate(5px,-2px); opacity: .6; }
+  93%         { transform: translate(-2px,1px); opacity: .4; }
+}
+
+.overlay-sub {
+  font-size: .85rem;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+.overlay-sub span { color: var(--accent); }
+
+.btn-start {
+  background: transparent;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-head);
+  font-size: .9rem;
+  font-weight: 700;
+  letter-spacing: .2em;
+  padding: 12px 36px;
+  cursor: pointer;
+  border-radius: 2px;
+  text-transform: uppercase;
+  box-shadow: var(--glow), inset 0 0 20px rgba(0,240,255,.06);
+  transition: background .2s, color .2s, box-shadow .2s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-start::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .25s ease;
+  z-index: -1;
+}
+.btn-start:hover::before { transform: scaleX(1); }
+.btn-start:hover {
+  color: var(--bg);
+  box-shadow: 0 0 24px rgba(0,240,255,.8);
+}
+
+/* ── Footer ────────────────────────────────────────── */
+footer {
+  font-size: .62rem;
+  letter-spacing: .15em;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ── Responsive ────────────────────────────────────── */
+@media (max-width: 480px) {
+  .logo { font-size: .85rem; }
+  .hud  { gap: 14px; }
+  .hud-value { font-size: .9rem; }
+}
